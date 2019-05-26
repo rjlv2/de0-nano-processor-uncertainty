@@ -1,0 +1,5 @@
+#!/bin/bash
+
+iverilog testbench/simulate.v rtl/spi_master.v
+vvp a.out
+gtkwave spi.vcd
