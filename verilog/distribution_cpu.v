@@ -59,7 +59,13 @@ module cpu(
 			DMemWrite_sig,
 			DMemRead_sig,
 			du_clk_stall,
-			du_clk_in
+			du_clk_in,
+			
+			//new new
+			byte_in, //[7:0] 
+			readssr_req,
+			byte_received_ack,
+			byte_ready
 		);
 	
 	/*
@@ -71,6 +77,12 @@ module cpu(
 	output DMemRead_sig;
 	output du_clk_stall;
 	input du_clk_in;
+	
+	//new new
+	input[7:0] byte_in; //[7:0] 
+	output readssr_req;
+	output byte_received_ack;
+	input byte_ready;
 	
 	/*
 	 *	Input Clock
@@ -597,7 +609,13 @@ module cpu(
 		.rs1(regA_out), //[31:0]
 		.DU_input(EX_DFwdMuxOut1), //[255:0]
 		.DU_result(du_result), //[255:0]
-		.du_clk_stall(du_clk_stall)
+		.du_clk_stall(du_clk_stall),
+		
+		//new
+		.byte_in(byte_in), //[7:0] 
+		.readssr_req(readssr_req),
+		.byte_received_ack(byte_received_ack),
+		.byte_ready(byte_ready)
 	);
 	
 	id_ex_dregs id_ex_dregs_inst0(

@@ -1,8 +1,17 @@
 //top level
 
-module top (clk48, led);
+module top (clk48, led, byte_in, readssr_req, byte_received_ack, byte_ready, trigger);
 	output [7:0]	led;
 	input		clk48;
+	
+	input[7:0] byte_in; //[7:0] 
+	output readssr_req;
+	output byte_received_ack;
+	input byte_ready;
+	
+	input trigger;
+	
+	reg start = 1'b0;
 
 	wire		clk_proc;
 	wire		clk_cache;
@@ -57,7 +66,12 @@ module top (clk48, led);
 		.DMemWrite_sig(DMemWrite_sig_wire),
 		.DMemRead_sig(DMemRead_sig_wire),
 		.du_clk_stall(du_clk_stall),
-		.du_clk_in(clk_cache)
+		.du_clk_in(clk_cache),
+		
+		.byte_in(byte_in), //[7:0] 
+		.readssr_req(readssr_req),
+		.byte_received_ack(byte_received_ack),
+		.byte_ready(byte_ready)
 	);
 
 	instruction_memory inst_mem( 
@@ -82,7 +96,16 @@ module top (clk48, led);
 			.dist_in(DataMem_DistIn_wire),
 			.dist_out(DataMem_DistOut_wire)
 		);
+	
+	always @(posedge clk24) begin
+		if(!trigger) begin
+			start <= 1'b1;
+		end
+		if(inst_out == 32'h00000000) begin
+			start <= 1'b0;
+		end
+	end
 
-	assign clk_cache = clk12;
+	assign clk_cache = start ? clk12 : 1'b0;
 	assign clk_proc = (data_clk_stall | du_clk_stall) ? 1'b1 : clk_cache;
 endmodule
